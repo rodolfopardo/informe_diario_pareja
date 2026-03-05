@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informe: La Interna LLA y el Factor Villarruel | Identidad Central</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #16213e;
+            --accent: #0f3460;
+            --highlight: #e94560;
+            --gold: #c9a227;
+            --light: #f8f9fa;
+            --text: #2c3e50;
+            --text-light: #6c757d;
+            --border: #dee2e6;
+            --green: #27ae60;
+            --red: #e74c3c;
+            --orange: #f39c12;
+            --blue: #3498db;
+            --purple: #8e44ad;
+            --violet: #6c4c99;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text);
+            background: #fff;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        @page { margin: 10mm; }
+        @media print {
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+            body { font-size: 11px; margin: 0; }
+            .no-print { display: none !important; }
+            .report-container { max-width: 100%; padding: 0 15px; }
+            .cover-page {
+                height: calc(100vh - 20mm);
+                display: flex; flex-direction: column; justify-content: center; align-items: center;
+                padding: 20px 40px; background: #1a1a2e !important; color: #fff !important;
+                page-break-after: always;
+            }
+            .cover-page * { color: #fff !important; }
+            .cover-label { color: #c9a227 !important; }
+            .cover-divider { background: #c9a227 !important; }
+            .section { padding: 15px 0; page-break-inside: auto; border-bottom: none; }
+            .kpi-card, .comparison-card, .insight-box, .chart-container, .quote-box, .tweet-card, .article-card { page-break-inside: avoid; }
+            .data-table { page-break-inside: auto; }
+            .data-table tr { page-break-inside: avoid; }
+            .report-footer { page-break-inside: avoid; padding-top: 30px; margin-top: 20px; }
+            .kpi-card { background: #f8f9fa !important; }
+            .insight-box { background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%) !important; }
+            .insight-box.red { background: linear-gradient(135deg, #fff5f5 0%, #ffe0e0 100%) !important; }
+            .insight-box.green { background: linear-gradient(135deg, #f0fff4 0%, #d4edda 100%) !important; }
+            .insight-box.blue { background: linear-gradient(135deg, #f0f7ff 0%, #d6eaff 100%) !important; }
+            .insight-box.violet { background: linear-gradient(135deg, #f5f0ff 0%, #e8dfff 100%) !important; }
+            .comparison-card.pareja { background: #f0f0ff !important; }
+            .comparison-card.villarruel { background: #fdf0ff !important; }
+            .data-table th { background: #1a1a2e !important; color: #fff !important; }
+            .data-table tr:nth-child(even) { background: #f8f9fa !important; }
+            .section-number { background: #1a1a2e !important; color: #fff !important; }
+            .badge.negative { background: #fce4ec !important; color: #e74c3c !important; }
+            .badge.positive { background: #e8f5e9 !important; color: #27ae60 !important; }
+            .badge.neutral { background: #e3f2fd !important; color: #3498db !important; }
+            .chart-container { height: 220px !important; }
+            .chart-container.short { height: 180px !important; }
+            .chart-grid { page-break-inside: avoid; }
+            .comparison-grid { page-break-inside: avoid; }
+            .kpi-row { page-break-inside: avoid; }
+        }
+
+        .report-container { max-width: 1100px; margin: 0 auto; padding: 0 30px; }
+
+        /* === COVER PAGE === */
+        .cover-page {
+            min-height: 100vh; display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            background: var(--primary); color: #fff; text-align: center;
+            padding: 50px 40px 40px;
+        }
+        .cover-icon { font-size: 60px; margin-bottom: 20px; opacity: 0.9; }
+        .cover-label {
+            text-transform: uppercase; letter-spacing: 6px; font-size: 12px;
+            font-weight: 500; color: var(--gold); margin-bottom: 35px;
+        }
+        .cover-badge {
+            display: inline-block; background: var(--highlight); color: #fff;
+            padding: 6px 18px; border-radius: 20px; font-size: 11px;
+            font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px;
+        }
+        .cover-title { font-size: 32px; font-weight: 800; line-height: 1.2; margin-bottom: 6px; letter-spacing: -0.5px; }
+        .cover-subtitle { font-size: 16px; font-weight: 300; opacity: 0.85; margin-bottom: 30px; }
+        .cover-divider { width: 60px; height: 3px; background: var(--gold); margin: 25px auto; border-radius: 2px; }
+        .cover-meta { display: flex; gap: 30px; font-size: 12px; opacity: 0.7; margin-top: 15px; }
+        .cover-footer { margin-top: 40px; font-size: 11px; opacity: 0.5; }
+
+        /* === SECTIONS === */
+        .section { padding: 40px 0; border-bottom: 1px solid var(--border); }
+        .section:last-child { border-bottom: none; }
+        .section-number {
+            display: inline-block; background: var(--primary); color: #fff;
+            width: 28px; height: 28px; border-radius: 50%; text-align: center;
+            line-height: 28px; font-size: 13px; font-weight: 600; margin-right: 10px; vertical-align: middle;
+        }
+        .section-title { font-size: 22px; font-weight: 700; color: var(--primary); margin-bottom: 20px; display: inline; vertical-align: middle; }
+        .section-intro { color: var(--text-light); font-size: 14px; margin-bottom: 25px; line-height: 1.7; max-width: 750px; }
+
+        /* === KPI CARDS === */
+        .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 30px; }
+        .kpi-card { background: var(--light); border-radius: 10px; padding: 20px; text-align: center; border: 1px solid var(--border); }
+        .kpi-value { font-size: 32px; font-weight: 800; color: var(--primary); line-height: 1.1; }
+        .kpi-value.accent { color: var(--highlight); }
+        .kpi-value.green { color: var(--green); }
+        .kpi-value.blue { color: var(--blue); }
+        .kpi-value.purple { color: var(--purple); }
+        .kpi-value.violet { color: var(--violet); }
+        .kpi-label { font-size: 11px; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 6px; font-weight: 500; }
+        .kpi-sub { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+
+        /* === CHARTS === */
+        .chart-container { position: relative; height: 320px; margin-bottom: 25px; }
+        .chart-container.short { height: 260px; }
+        .chart-label { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
+
+        /* === INSIGHT BOXES === */
+        .insight-box {
+            background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
+            border-left: 4px solid var(--gold); padding: 18px 22px;
+            border-radius: 0 8px 8px 0; margin: 20px 0; font-size: 13.5px; line-height: 1.7;
+        }
+        .insight-box strong { color: var(--primary); }
+        .insight-box.red { background: linear-gradient(135deg, #fff5f5 0%, #ffe0e0 100%); border-left-color: var(--red); }
+        .insight-box.green { background: linear-gradient(135deg, #f0fff4 0%, #d4edda 100%); border-left-color: var(--green); }
+        .insight-box.blue { background: linear-gradient(135deg, #f0f7ff 0%, #d6eaff 100%); border-left-color: var(--blue); }
+        .insight-box.violet { background: linear-gradient(135deg, #f5f0ff 0%, #e8dfff 100%); border-left-color: var(--violet); }
+
+        /* === TABLES === */
+        .data-table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin: 15px 0; }
+        .data-table th {
+            background: var(--primary); color: #fff; padding: 10px 14px; text-align: left;
+            font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .data-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+        .data-table tr:nth-child(even) { background: #f8f9fa; }
+        .data-table .highlight-cell { font-weight: 600; color: var(--primary); }
+
+        /* === COMPARISON === */
+        .comparison-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin: 20px 0; }
+        .comparison-card { border-radius: 10px; padding: 22px; border: 2px solid; }
+        .comparison-card.pareja { border-color: var(--violet); background: #f5f0ff; }
+        .comparison-card.villarruel { border-color: var(--purple); background: #fdf0ff; }
+        .comparison-card.caputo { border-color: var(--orange); background: #fff8f0; }
+        .comparison-card.karina { border-color: var(--gold); background: #fffdf0; }
+        .comparison-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .comparison-card .stat-line { display: flex; justify-content: space-between; padding: 5px 0; font-size: 13px; border-bottom: 1px solid rgba(0,0,0,0.06); }
+        .comparison-card .stat-value { font-weight: 700; }
+
+        /* === ARTICLE CARDS === */
+        .article-card {
+            background: #fff; border: 1px solid var(--border); border-radius: 12px;
+            padding: 20px 24px; margin: 16px 0; transition: box-shadow 0.2s;
+        }
+        .article-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+        .article-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .article-source {
+            display: inline-block; padding: 4px 12px; border-radius: 6px;
+            font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .article-source.nacional { background: #e3f2fd; color: #1565c0; }
+        .article-source.provincial { background: #e8f5e9; color: #2e7d32; }
+        .article-source.opinion { background: #fff3e0; color: #e65100; }
+        .article-source.digital { background: #f3e5f5; color: #7b1fa2; }
+        .article-title { font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 8px; line-height: 1.4; }
+        .article-meta { font-size: 11px; color: var(--text-light); margin-bottom: 10px; }
+        .article-summary { font-size: 13px; line-height: 1.7; color: var(--text); }
+        .article-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+
+        /* === QUOTE BOXES === */
+        .quote-box { background: #f8f9fa; border-left: 3px solid var(--text-light); padding: 12px 16px; margin: 8px 0; border-radius: 0 6px 6px 0; font-style: italic; font-size: 12.5px; color: #555; }
+        .quote-box.pareja-quote { border-left-color: var(--violet); background: #f5f0ff; }
+        .quote-box.villarruel-quote { border-left-color: var(--purple); background: #fdf0ff; }
+        .quote-box.milei-quote { border-left-color: var(--highlight); background: #fff5f7; }
+        .quote-box.petri-quote { border-left-color: var(--blue); background: #f0f7ff; }
+        .quote-meta { font-style: normal; font-size: 11px; color: var(--text-light); margin-top: 4px; }
+
+        /* === PROGRESS BARS === */
+        .progress-row { display: flex; align-items: center; margin: 8px 0; gap: 12px; }
+        .progress-label { width: 130px; font-size: 12px; font-weight: 500; text-align: right; flex-shrink: 0; }
+        .progress-bar-bg { flex: 1; height: 22px; background: #e9ecef; border-radius: 11px; overflow: hidden; position: relative; }
+        .progress-bar-fill { height: 100%; border-radius: 11px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-size: 10px; font-weight: 600; color: #fff; min-width: 30px; }
+
+        /* === TIMELINE === */
+        .timeline { position: relative; padding-left: 30px; margin: 20px 0; }
+        .timeline::before { content: ''; position: absolute; left: 10px; top: 0; bottom: 0; width: 2px; background: var(--border); }
+        .timeline-item { position: relative; margin-bottom: 20px; }
+        .timeline-item::before { content: ''; position: absolute; left: -24px; top: 6px; width: 12px; height: 12px; border-radius: 50%; background: var(--primary); border: 2px solid #fff; box-shadow: 0 0 0 2px var(--primary); }
+        .timeline-item.highlight::before { background: var(--highlight); box-shadow: 0 0 0 2px var(--highlight); }
+        .timeline-time { font-size: 11px; color: var(--text-light); font-weight: 500; margin-bottom: 4px; }
+        .timeline-content { font-size: 13px; line-height: 1.6; }
+
+        /* === BADGES === */
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+        .badge.negative { background: #fce4ec; color: var(--red); }
+        .badge.positive { background: #e8f5e9; color: var(--green); }
+        .badge.neutral { background: #e3f2fd; color: var(--blue); }
+        .badge.warning { background: #fff3e0; color: var(--orange); }
+        .badge.purple { background: #f3e5f5; color: var(--purple); }
+        .badge.violet { background: #ede7f6; color: var(--violet); }
+
+        /* === KEYWORD CLOUD === */
+        .keyword-cloud { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 20px; background: var(--light); border-radius: 10px; margin: 15px 0; }
+        .keyword-tag { display: inline-block; padding: 4px 12px; border-radius: 20px; font-weight: 600; background: var(--primary); color: #fff; }
+        .keyword-tag.size-1 { font-size: 10px; opacity: 0.6; background: #6c757d; }
+        .keyword-tag.size-2 { font-size: 12px; opacity: 0.7; }
+        .keyword-tag.size-3 { font-size: 14px; opacity: 0.8; }
+        .keyword-tag.size-4 { font-size: 17px; }
+        .keyword-tag.size-5 { font-size: 21px; background: var(--highlight); }
+
+        /* === SOURCE BUTTONS === */
+        .source-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 8px 18px; border-radius: 8px; font-size: 12px; font-weight: 600;
+            text-decoration: none; color: #fff; transition: all 0.2s; margin-top: 12px;
+            letter-spacing: 0.3px;
+        }
+        .source-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .source-btn.nacional { background: #3498db; }
+        .source-btn.provincial { background: #27ae60; }
+        .source-btn.opinion { background: #e65100; }
+        .source-btn.digital { background: #7b1fa2; }
+        @media print { .source-btn { display: none !important; } }
+
+        /* === FOOTER === */
+        .report-footer { padding: 40px 0 30px; text-align: center; color: var(--text-light); font-size: 12px; }
+        .footer-brand { font-weight: 700; color: var(--primary); font-size: 14px; margin-bottom: 4px; }
+        .footer-link { color: var(--gold); text-decoration: none; }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 768px) {
+            .kpi-row { grid-template-columns: repeat(2, 1fr); }
+            .chart-grid { grid-template-columns: 1fr; }
+            .comparison-grid { grid-template-columns: 1fr; }
+            .cover-title { font-size: 24px; }
+            .cover-meta { flex-direction: column; gap: 8px; }
+        }
+        @media (max-width: 480px) {
+            .kpi-row { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .kpi-value { font-size: 24px; }
+            .report-container { padding: 0 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ==================== COVER PAGE ==================== -->
+<div class="cover-page">
+    <div class="cover-icon"><i class="fas fa-radar"></i></div>
+    <div class="cover-label">Informe de Escucha Digital</div>
+    <div class="cover-badge"><i class="fas fa-fire"></i> Alerta Estrategica</div>
+    <h1 class="cover-title">Villarruel Construye Poder Propio:<br>El Riesgo para el Armado Bonaerense</h1>
+    <p class="cover-subtitle">La interna LLA explota en semana clave: apertura de sesiones, cruce con Petri y amenaza territorial</p>
+    <div class="cover-divider"></div>
+    <div class="cover-meta">
+        <span><i class="far fa-calendar"></i> 5 de marzo de 2026</span>
+        <span><i class="far fa-clock"></i> Informe Diario</span>
+        <span><i class="fas fa-newspaper"></i> 8 medios analizados</span>
+    </div>
+    <div class="cover-footer">Identidad Central &middot; www.identidadcentral.com</div>
+</div>
+
+<div class="report-container">
+
+<!-- ==================== SECTION 1: RESUMEN EJECUTIVO ==================== -->
+<div class="section">
+    <span class="section-number">1</span>
+    <h2 class="section-title">Resumen Ejecutivo</h2>
+    <p class="section-intro">
+        La semana del 1 al 5 de marzo marca un punto de inflexion en la interna de La Libertad Avanza. La apertura de sesiones ordinarias desato una crisis publica entre <strong>Milei y Villarruel</strong>, que escalo rapidamente con el cruce <strong>Petri-Villarruel</strong> y la viral frase "Quieren mi renuncia, pero no se les va a dar". Villarruel consolida un armado territorial propio (<strong>"La Juan Bautista"</strong>) que representa una amenaza directa al control de <strong>Sebastian Pareja y Karina Milei</strong> sobre la provincia de Buenos Aires.
+    </p>
+
+    <div class="kpi-row">
+        <div class="kpi-card">
+            <div class="kpi-value accent">8</div>
+            <div class="kpi-label">Medios que Cubren</div>
+            <div class="kpi-sub">Infobae, La Nacion, Perfil, Ambito +4</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-value purple">+350%</div>
+            <div class="kpi-label">Aumento Cobertura Villarruel</div>
+            <div class="kpi-sub">vs. semana anterior</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-value blue">4</div>
+            <div class="kpi-label">Actores en Disputa</div>
+            <div class="kpi-sub">Villarruel, Petri, Milei, Lemoine</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-value" style="color:var(--red)">ALTA</div>
+            <div class="kpi-label">Alerta Territorial</div>
+            <div class="kpi-sub">"La Juan Bautista" vs armado Pareja</div>
+        </div>
+    </div>
+
+    <div class="insight-box red">
+        <strong><i class="fas fa-exclamation-triangle"></i> Alerta para el armado bonaerense:</strong> Villarruel no solo resiste la presion interna: esta <strong>construyendo estructura territorial propia</strong>. Su agrupacion "La Juan Bautista" ya opera en Buenos Aires, y su representante Luis Giacchino busca acuerdos en provincias. Si consolida una candidatura presidencial 2027 con aparato propio, <strong>fragmenta el electorado libertario en el territorio que Pareja necesita dominar</strong>.
+    </div>
+
+    <div class="insight-box violet">
+        <strong><i class="fas fa-chess"></i> Por que esto importa ahora:</strong> Pareja declaro en la apertura de sesiones que "la verdadera grieta es moral, no ideologica" y pidio unidad. Pero <strong>la realidad mediática muestra exactamente lo contrario</strong>: la cobertura de esta semana esta dominada por la fractura interna. Cada dia que la interna ocupa titulares, se debilita el mensaje de unidad que Pareja necesita para 2027.
+    </div>
+</div>
+
+<!-- ==================== SECTION 2: CRONOLOGIA DE LA CRISIS ==================== -->
+<div class="section">
+    <span class="section-number">2</span>
+    <h2 class="section-title">Cronologia de la Crisis: 1 al 5 de Marzo</h2>
+    <p class="section-intro">
+        Cinco dias que cambiaron el mapa interno de La Libertad Avanza. De un saludo frio a una guerra abierta.
+    </p>
+
+    <div class="timeline">
+        <div class="timeline-item">
+            <div class="timeline-time">Sabado 1 de marzo - Apertura de Sesiones</div>
+            <div class="timeline-content">
+                <strong>Saludo frio Milei-Villarruel</strong> en el Congreso. Contraste con el abrazo a Martin Menem. Milei alude a "propios que sonaban con el sillon de Rivadavia". Pareja integra la Comision de Recepcion Externa junto a Lemoine y Bornoroni.
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-time">Domingo 2 de marzo - Discurso presidencial</div>
+            <div class="timeline-content">
+                Villarruel usa el celular durante el discurso de Milei. <strong>Pareja defiende al presidente</strong> en TV: "La verdadera grieta en la Argentina es moral". Pide "elevar el nivel" en el Congreso.
+            </div>
+        </div>
+        <div class="timeline-item highlight">
+            <div class="timeline-time">Lunes 3 de marzo - Explosion de la interna</div>
+            <div class="timeline-content">
+                <strong>Petri acusa a Villarruel de "golpista"</strong> en TN. Villarruel responde: "Quieren mi renuncia, pero no se les va a dar". Lo acusa de vaciar IOSFA. El gobierno le reclama "alineamiento". <strong>Cobertura masiva:</strong> Infobae, La Nacion, Perfil, Cronista, Ambito, +20 medios provinciales.
+            </div>
+        </div>
+        <div class="timeline-item highlight">
+            <div class="timeline-time">Martes 4 de marzo - Expansion del conflicto</div>
+            <div class="timeline-content">
+                Lemoine se suma con insulto gordofobico a Villarruel. Ambito revela dudas sobre presencia de Villarruel en la <strong>Vendimia de Mendoza</strong>. Se confirma que tiene armado territorial propio: "La Juan Bautista". Se menciona a Luis Giacchino como operador de Villarruel.
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-time">Miercoles 5 de marzo - Hoy</div>
+            <div class="timeline-content">
+                La narrativa de fractura domina la agenda. Pravda (agencia internacional) titula: <strong>"Vinculo roto entre Milei y Villarruel"</strong>. La cobertura se internacionaliza. El foco gira a las elecciones 2027 y quien controla cada territorio.
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== SECTION 3: MAPA DE MEDIOS ==================== -->
+<div class="section">
+    <span class="section-number">3</span>
+    <h2 class="section-title">Mapa de Medios: Cobertura de la Interna LLA</h2>
+    <p class="section-intro">
+        Analisis de las notas principales que mencionan la interna libertaria entre el 3 y 5 de marzo. Todas relevan la fractura y el factor Villarruel.
+    </p>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Medio</th>
+                <th>Alcance</th>
+                <th>Angulo</th>
+                <th>Menc. Villarruel</th>
+                <th>Tono</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="highlight-cell">Infobae</td>
+                <td>Nacional - Top 1</td>
+                <td>"Quieren mi renuncia, pero no se les va a dar"</td>
+                <td><span class="badge purple">Protagonista</span></td>
+                <td><span class="badge negative">Fractura</span></td>
+            </tr>
+            <tr>
+                <td class="highlight-cell">La Nacion</td>
+                <td>Nacional - Top 2</td>
+                <td>Cruce Petri-Villarruel: "golpista" vs "trencito"</td>
+                <td><span class="badge purple">Protagonista</span></td>
+                <td><span class="badge negative">Conflicto</span></td>
+            </tr>
+            <tr>
+                <td class="highlight-cell">Perfil</td>
+                <td>Nacional</td>
+                <td>Interna LLA exploto en Derecha Fest contra Pareja</td>
+                <td><span class="badge neutral">Contexto</span></td>
+                <td><span class="badge warning">Interna</span></td>
+            </tr>
+            <tr>
+                <td class="highlight-cell">El Cronista</td>
+                <td>Nacional - Economico</td>
+                <td>"Noche de furia" de Villarruel en redes</td>
+                <td><span class="badge purple">Protagonista</span></td>
+                <td><span class="badge negative">Crisis</span></td>
+            </tr>
+            <tr>
+                <td class="highlight-cell">Ambito</td>
+                <td>Nacional</td>
+                <td>Villarruel en Vendimia + cruce con Petri</td>
+                <td><span class="badge purple">Protagonista</span></td>
+                <td><span class="badge warning">Estrategico</span></td>
+            </tr>
+            <tr>
+                <td class="highlight-cell">El Argentino</td>
+                <td>Nacional</td>
+                <td>Villarruel en la mira: reproches y tensiones</td>
+                <td><span class="badge purple">Protagonista</span></td>
+                <td><span class="badge negative">Negativo</span></td>
+            </tr>
+            <tr>
+                <td class="highlight-cell">InfoRegion</td>
+                <td>Buenos Aires</td>
+                <td>Saludo frio Milei-Villarruel en sesiones</td>
+                <td><span class="badge purple">Protagonista</span></td>
+                <td><span class="badge neutral">Descriptivo</span></td>
+            </tr>
+            <tr>
+                <td class="highlight-cell">Pravda (Internacional)</td>
+                <td>Global</td>
+                <td>"Vinculo roto" entre Milei y Villarruel</td>
+                <td><span class="badge purple">Protagonista</span></td>
+                <td><span class="badge negative">Ruptura</span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="chart-grid">
+        <div>
+            <div class="chart-label">Tono de cobertura hacia la interna LLA</div>
+            <div class="chart-container short">
+                <canvas id="tonoChart"></canvas>
+            </div>
+        </div>
+        <div>
+            <div class="chart-label">Alcance geografico de la cobertura</div>
+            <div class="chart-container short">
+                <canvas id="alcanceChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="insight-box red">
+        <strong><i class="fas fa-chart-line"></i> Dato clave:</strong> Villarruel paso de tener cobertura moderada (2-3 notas/semana) a ser <strong>protagonista en 8+ medios nacionales en 48 horas</strong>. Su frase "Quieren mi renuncia" se viralizo y fue replicada por mas de 20 medios provinciales. Esta explosion mediatica le da <strong>visibilidad gratuita</strong> que ningun candidato potencial a 2027 tiene hoy.
+    </div>
+</div>
+
+<!-- ==================== SECTION 4: CRUCE PETRI-VILLARRUEL ==================== -->
+<div class="section">
+    <span class="section-number">4</span>
+    <h2 class="section-title">El Cruce Petri-Villarruel: Declaraciones Clave</h2>
+    <p class="section-intro">
+        El enfrentamiento publico entre el diputado Luis Petri y la vicepresidenta revela las lineas de fractura internas y define bandos dentro de LLA.
+    </p>
+
+    <div class="comparison-grid">
+        <div>
+            <h3 style="font-size:15px; margin-bottom: 15px; color:var(--blue);"><i class="fas fa-user-tie"></i> Luis Petri (Ataque)</h3>
+
+            <div class="quote-box petri-quote">
+                "Ha estado fuera de lugar dos anos. No me sorprende [el gesto con el telefono]"
+                <div class="quote-meta">Petri en TN &middot; 3 de marzo 2026</div>
+            </div>
+
+            <div class="quote-box petri-quote">
+                "Debe haber pensado en ser presidenta. Creo que aposto al fracaso de nuestro gobierno"
+                <div class="quote-meta">Petri en TN &middot; 3 de marzo 2026</div>
+            </div>
+
+            <div class="quote-box petri-quote">
+                "A vos te conozco por golpista"
+                <div class="quote-meta">Petri en X &middot; 3 de marzo 2026</div>
+            </div>
+        </div>
+        <div>
+            <h3 style="font-size:15px; margin-bottom: 15px; color:var(--purple);"><i class="fas fa-user-shield"></i> Victoria Villarruel (Respuesta)</h3>
+
+            <div class="quote-box villarruel-quote">
+                "Lo conozco por sus cosplays y los trencitos de la alegria con el presidente Milei"
+                <div class="quote-meta">Villarruel en X &middot; 3 de marzo 2026</div>
+            </div>
+
+            <div class="quote-box villarruel-quote">
+                "Eso quieren. Mi renuncia. Pero no se les va a dar. El 10/12/27 hasta esa fecha ocupo con honestidad mi cargo"
+                <div class="quote-meta">Villarruel en X &middot; 3 de marzo 2026</div>
+            </div>
+
+            <div class="quote-box villarruel-quote">
+                "Que responda por el vaciamiento de IOSFA y los miles de militares sin cobertura medica"
+                <div class="quote-meta">Villarruel en X &middot; 3 de marzo 2026</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="insight-box">
+        <strong><i class="fas fa-chess-queen"></i> Lectura estrategica:</strong> Villarruel salio fortalecida del cruce. Su frase sobre la renuncia se viralizo y la posiciono como <strong>victima de una persecucion interna</strong>. Petri, en cambio, quedo asociado a la agresion (reforzado por Lemoine con su insulto gordofobico). En la percepcion publica, <strong>Villarruel gano la batalla narrativa</strong>.
+    </div>
+</div>
+
+<!-- ==================== SECTION 5: AMENAZA TERRITORIAL ==================== -->
+<div class="section">
+    <span class="section-number">5</span>
+    <h2 class="section-title">Amenaza Territorial: Villarruel vs. Armado Pareja-Karina</h2>
+    <p class="section-intro">
+        El elemento mas preocupante para la estrategia bonaerense: Villarruel no se limita a la resistencia discursiva, sino que esta construyendo <strong>estructura territorial propia</strong> que compite directamente con el armado de Pareja.
+    </p>
+
+    <div class="comparison-grid">
+        <div class="comparison-card pareja">
+            <h4><i class="fas fa-chess-rook" style="color:var(--violet)"></i> Armado Pareja-Karina</h4>
+            <div class="stat-line"><span>Territorio</span><span class="stat-value" style="color:var(--violet)">Buenos Aires</span></div>
+            <div class="stat-line"><span>Respaldo</span><span class="stat-value" style="color:var(--violet)">Karina Milei</span></div>
+            <div class="stat-line"><span>Estructura</span><span class="stat-value" style="color:var(--violet)">LLA oficial + Sec. Integracion</span></div>
+            <div class="stat-line"><span>Objetivo 2027</span><span class="stat-value" style="color:var(--violet)">Gobernacion PBA</span></div>
+            <div class="stat-line"><span>Fortaleza</span><span class="stat-value" style="color:var(--green)">Aparato estatal</span></div>
+            <div class="stat-line"><span>Debilidad</span><span class="stat-value" style="color:var(--red)">Resistencia de FdC</span></div>
+        </div>
+        <div class="comparison-card villarruel">
+            <h4><i class="fas fa-chess-queen" style="color:var(--purple)"></i> Armado Villarruel</h4>
+            <div class="stat-line"><span>Agrupacion</span><span class="stat-value" style="color:var(--purple)">"La Juan Bautista"</span></div>
+            <div class="stat-line"><span>Operador</span><span class="stat-value" style="color:var(--purple)">Luis Giacchino</span></div>
+            <div class="stat-line"><span>Estructura</span><span class="stat-value" style="color:var(--purple)">Territorial incipiente</span></div>
+            <div class="stat-line"><span>Objetivo 2027</span><span class="stat-value" style="color:var(--purple)">Candidatura presidencial</span></div>
+            <div class="stat-line"><span>Fortaleza</span><span class="stat-value" style="color:var(--green)">Visibilidad mediatica</span></div>
+            <div class="stat-line"><span>Debilidad</span><span class="stat-value" style="color:var(--red)">Sin estructura solida</span></div>
+        </div>
+    </div>
+
+    <div style="margin: 25px 0;">
+        <div class="chart-label">Nivel de amenaza territorial de Villarruel</div>
+        <div class="progress-row">
+            <div class="progress-label" style="color:var(--purple)">Visibilidad</div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" style="width:95%; background: var(--purple);">Muy alta</div>
+            </div>
+        </div>
+        <div class="progress-row">
+            <div class="progress-label" style="color:var(--purple)">Simpatia publica</div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" style="width:70%; background: var(--highlight);">Alta</div>
+            </div>
+        </div>
+        <div class="progress-row">
+            <div class="progress-label" style="color:var(--purple)">Estructura territ.</div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" style="width:30%; background: var(--orange);">Incipiente</div>
+            </div>
+        </div>
+        <div class="progress-row">
+            <div class="progress-label" style="color:var(--purple)">Financiamiento</div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" style="width:20%; background: var(--text-light);">Bajo</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="insight-box red">
+        <strong><i class="fas fa-exclamation-triangle"></i> Riesgo critico:</strong> Hoy la estructura de Villarruel es incipiente, pero su <strong>capital mediatico es enorme</strong>. Si logra convertir visibilidad en estructura territorial antes de las elecciones 2027, puede <strong>fragmentar el voto libertario en Buenos Aires</strong>. El armado de Pareja necesita monitorear en tiempo real: donde se reune Giacchino, que dirigentes locales se acercan a "La Juan Bautista", y como evoluciona la simpatia publica de Villarruel semana a semana.
+    </div>
+
+    <div class="insight-box green">
+        <strong><i class="fas fa-shield-alt"></i> Ventana de oportunidad:</strong> La estructura territorial de Villarruel es todavia debil. <strong>Este es el momento de consolidar alianzas</strong> antes de que su capital mediatico se traduzca en poder territorial. Un monitoreo sistematico de medios y redes permite detectar movimientos de Giacchino y anticipar donde Villarruel busca plantar bandera.
+    </div>
+</div>
+
+<!-- ==================== SECTION 6: PAREJA EN MEDIOS ==================== -->
+<div class="section">
+    <span class="section-number">6</span>
+    <h2 class="section-title">Pareja en Medios: Presencia esta Semana</h2>
+    <p class="section-intro">
+        Apariciones de Sebastian Pareja en medios durante la semana del 1 al 5 de marzo.
+    </p>
+
+    <div class="article-card">
+        <div class="article-header">
+            <span class="article-source provincial">La Noticia 1</span>
+            <span style="font-size:11px; color:var(--text-light);">2 de marzo 2026</span>
+        </div>
+        <div class="article-title">"La verdadera grieta en la Argentina es moral"</div>
+        <div class="article-summary">
+            En declaraciones televisivas desde el Congreso durante la apertura de sesiones, Pareja defendio el rumbo de Milei y sostuvo que la politica argentina "cambio de matriz". Pidio a todas las fuerzas "elevar el nivel" y cuestiono las practicas de la dirigencia tradicional.
+        </div>
+        <div class="article-tags">
+            <span class="badge positive">Pro-gobierno</span>
+            <span class="badge neutral">Apertura sesiones</span>
+            <span class="badge violet">Pareja</span>
+        </div>
+        <a href="https://www.lanoticia1.com/noticia/sebastian-pareja-en-la-apertura-de-sesiones-la-verdadera-grieta-en-la-argentina-es-moral" target="_blank" class="source-btn provincial"><i class="fas fa-external-link-alt"></i> Ver nota en La Noticia 1</a>
+    </div>
+
+    <div class="article-card">
+        <div class="article-header">
+            <span class="article-source nacional">Infobae</span>
+            <span style="font-size:11px; color:var(--text-light);">26 de febrero 2026</span>
+        </div>
+        <div class="article-title">LLA lanza frente universitario y se prepara para competir en la UBA</div>
+        <div class="article-summary">
+            "Crear + Libertad", la agrupacion universitaria alineada con Pareja, se lanza formalmente. Compite con ULLA (Las Fuerzas del Cielo / Caputo). Muestra la extension del armado territorial de Pareja al ambito academico.
+        </div>
+        <div class="article-tags">
+            <span class="badge positive">Expansion</span>
+            <span class="badge neutral">Universidad</span>
+            <span class="badge violet">Pareja</span>
+        </div>
+        <a href="https://www.infobae.com/politica/2026/02/26/la-libertad-avanza-lanza-su-frente-universitario-y-se-prepara-para-competir-por-cargos-en-la-uba/" target="_blank" class="source-btn nacional"><i class="fas fa-external-link-alt"></i> Ver nota en Infobae</a>
+    </div>
+
+    <div class="article-card">
+        <div class="article-header">
+            <span class="article-source opinion">Zona Norte Diario</span>
+            <span style="font-size:11px; color:var(--text-light);">4 de febrero 2026</span>
+        </div>
+        <div class="article-title">"A partir de 2027, La Libertad Avanza gobierna la provincia de Buenos Aires"</div>
+        <div class="article-summary">
+            Pareja lanzo la carrera electoral para 2027 con declaracion contundente. Objetivo: disputar la gobernacion a Kicillof y Santilli. Reafirmo el respaldo de Karina Milei y la consolidacion de la estructura territorial bonaerense.
+        </div>
+        <div class="article-tags">
+            <span class="badge positive">Ambicion 2027</span>
+            <span class="badge warning">Gobernacion PBA</span>
+            <span class="badge violet">Pareja</span>
+        </div>
+        <a href="https://www.zonanortediario.com.ar/04/02/2026/pareja-lanzo-la-carrera-libertaria-para-2027-y-aseguro-que-la-libertad-avanza-va-a-gobernar-la-provincia-de-buenos-aires/" target="_blank" class="source-btn opinion"><i class="fas fa-external-link-alt"></i> Ver nota en Zona Norte Diario</a>
+    </div>
+
+    <div class="insight-box blue">
+        <strong><i class="fas fa-chart-bar"></i> Analisis de presencia mediatica:</strong> La cobertura de Pareja esta semana fue <strong>limitada y opacada</strong> por la explosion del conflicto Villarruel-Petri. Su aparicion mas relevante (apertura de sesiones) tuvo tono institucional y positivo, pero <strong>quedo eclipsada</strong> por la narrativa de fractura interna. Para un candidato a gobernador 2027, necesita mayor volumen de apariciones en temas propios, no solo reacciones al conflicto de otros.
+    </div>
+</div>
+
+<!-- ==================== SECTION 7: NUBE DE PALABRAS Y NARRATIVA ==================== -->
+<div class="section">
+    <span class="section-number">7</span>
+    <h2 class="section-title">Narrativa Dominante: Palabras Clave en Medios</h2>
+    <p class="section-intro">
+        Las palabras mas repetidas en la cobertura de la interna LLA esta semana. Quien controla la narrativa, controla la agenda.
+    </p>
+
+    <div class="keyword-cloud">
+        <span class="keyword-tag size-5">Villarruel</span>
+        <span class="keyword-tag size-5">renuncia</span>
+        <span class="keyword-tag size-4">interna</span>
+        <span class="keyword-tag size-4">golpista</span>
+        <span class="keyword-tag size-4">Petri</span>
+        <span class="keyword-tag size-3">Milei</span>
+        <span class="keyword-tag size-3">fractura</span>
+        <span class="keyword-tag size-3">cosplayer</span>
+        <span class="keyword-tag size-3">sesiones</span>
+        <span class="keyword-tag size-2">IOSFA</span>
+        <span class="keyword-tag size-2">Vendimia</span>
+        <span class="keyword-tag size-2">Lemoine</span>
+        <span class="keyword-tag size-2">Karina</span>
+        <span class="keyword-tag size-1">Giacchino</span>
+        <span class="keyword-tag size-1">Juan Bautista</span>
+        <span class="keyword-tag size-1">Pareja</span>
+        <span class="keyword-tag size-1">territorial</span>
+        <span class="keyword-tag size-1">2027</span>
+    </div>
+
+    <div class="insight-box red">
+        <strong><i class="fas fa-eye"></i> Dato critico:</strong> "Pareja" aparece en <strong>tamano minimo</strong> en la nube de palabras. Mientras Villarruel domina la conversacion con su nombre en los 8 medios analizados, Pareja aparece mencionado solo en 2. Para un dirigente que aspira a gobernar Buenos Aires, <strong>la invisibilidad mediatica en momentos de crisis interna es un riesgo</strong>: quien no aparece, no existe en la percepcion publica.
+    </div>
+</div>
+
+<!-- ==================== SECTION 8: RECOMENDACIONES ==================== -->
+<div class="section">
+    <span class="section-number">8</span>
+    <h2 class="section-title">Recomendaciones Estrategicas</h2>
+    <p class="section-intro">
+        Acciones sugeridas para capitalizar el momento y neutralizar la amenaza territorial de Villarruel.
+    </p>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+        <div class="insight-box green" style="margin:0;">
+            <strong><i class="fas fa-bullseye"></i> 1. Monitoreo diario del armado Villarruel</strong><br>
+            Seguimiento sistematico de Luis Giacchino y "La Juan Bautista": reuniones, acuerdos, presencia en municipios bonaerenses. Detectar en tiempo real si dirigentes locales migran hacia Villarruel.
+        </div>
+        <div class="insight-box green" style="margin:0;">
+            <strong><i class="fas fa-volume-up"></i> 2. Aumentar presencia mediatica propia</strong><br>
+            Generar agenda propia con temas de gestion (reforma constitucional PBA, frente universitario, integracion socio-urbana) que posicionen a Pareja fuera de la narrativa de interna.
+        </div>
+        <div class="insight-box green" style="margin:0;">
+            <strong><i class="fas fa-users"></i> 3. Consolidar alianzas territoriales</strong><br>
+            Aprovechar que la estructura de Villarruel es todavia debil para cerrar acuerdos con intendentes y concejales bonaerenses antes de que se abra la ventana electoral 2027.
+        </div>
+        <div class="insight-box green" style="margin:0;">
+            <strong><i class="fas fa-chart-line"></i> 4. Medir sentimiento en redes</strong><br>
+            Trackear como evoluciona la simpatia hacia Villarruel en Buenos Aires. Si crece, el riesgo de fragmentacion del voto libertario se acelera. Datos concretos permiten actuar antes.
+        </div>
+    </div>
+
+    <div class="insight-box violet">
+        <strong><i class="fas fa-rocket"></i> Conclusion:</strong> La crisis interna de esta semana es una <strong>oportunidad disfrazada de amenaza</strong>. Villarruel gana visibilidad pero aun no tiene estructura. El armado de Pareja tiene el aparato, los recursos y el respaldo de Karina. <strong>Quien monitoree mejor el tablero, gana la partida.</strong> Un sistema de escucha digital permanente marca la diferencia entre reaccionar tarde y anticipar cada movimiento.
+    </div>
+</div>
+
+<!-- ==================== FOOTER ==================== -->
+<div class="report-footer">
+    <div class="footer-brand">Identidad Central</div>
+    <a href="https://www.identidadcentral.com" class="footer-link">www.identidadcentral.com</a>
+    <p style="margin-top: 10px;">Informe de Escucha Digital &middot; 5 de marzo de 2026</p>
+    <p style="margin-top: 5px; font-size: 11px; opacity: 0.6;">Documento confidencial &middot; Preparado para Sebastian Pareja</p>
+</div>
+
+</div><!-- /report-container -->
+
+<script>
+// === CHART: Tono de cobertura ===
+new Chart(document.getElementById('tonoChart'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Negativo/Fractura', 'Ambiguo/Estrategico', 'Descriptivo/Neutral'],
+        datasets: [{
+            data: [5, 2, 1],
+            backgroundColor: ['#e74c3c', '#f39c12', '#3498db'],
+            borderWidth: 2,
+            borderColor: '#fff'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { position: 'bottom', labels: { padding: 15, font: { size: 12, family: 'Inter' } } }
+        }
+    }
+});
+
+// === CHART: Alcance geografico ===
+new Chart(document.getElementById('alcanceChart'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Nacional', 'Buenos Aires', 'Internacional'],
+        datasets: [{
+            data: [6, 1, 1],
+            backgroundColor: ['#3498db', '#27ae60', '#8e44ad'],
+            borderWidth: 2,
+            borderColor: '#fff'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { position: 'bottom', labels: { padding: 15, font: { size: 12, family: 'Inter' } } }
+        }
+    }
+});
+</script>
+
+</body>
+</html>
